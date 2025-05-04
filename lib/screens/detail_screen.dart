@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:crop_your_image/crop_your_image.dart'; // 実際のライブラリ
+import '../widgets/template_widget.dart';
 
 class DetailScreen extends StatefulWidget {
   final String imagePath;
@@ -41,40 +42,39 @@ class _DetailScreenState extends State<DetailScreen> {
 
   // トリミング後の画像を取得するためのコールバック
   void _onCropped(Uint8List croppedImage) {
-
     // 画像をファイルとして保存する処理を追加
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('画像をトリミングしました！')),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text('画像をトリミングしました！')));
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('画像詳細')),
-      body: _imageBytes.isEmpty
-          ? Center(child: CircularProgressIndicator()) // 画像がまだ読み込まれていない場合
-          : Column(
-              children: [
-                Expanded(
-                  child: Crop(
-                    image: _imageBytes, 
-                    onCropped: _onCropped, 
-                    controller: _controller, 
-                    aspectRatio: 1.0, 
+    return TemplateWidget(
+      body:
+          _imageBytes.isEmpty
+              ? Center(child: CircularProgressIndicator()) // 画像が読み込まれていない場合
+              : Column(
+                children: [
+                  Expanded(
+                    child: Crop(
+                      image: _imageBytes, // 画像データを渡す
+                      onCropped: _onCropped, // トリミング後の処理
+                      controller: _controller, // コントローラーを設定
+                      aspectRatio: 1.0, // アスペクト比1:1に設定
+                    ),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: ElevatedButton(
-                    onPressed: () {
-                      _controller.crop(); 
-                    },
-                    child: Text('画像をトリミング'),
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: ElevatedButton(
+                      onPressed: () {
+                        _controller.crop(); // トリミングボタン
+                      },
+                      child: Text('画像をトリミング'),
+                    ),
                   ),
-                ),
-              ],
-            ),
+                ],
+              ),
     );
   }
 }
